@@ -1,5 +1,6 @@
 import { Info, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from '@inertiajs/react';
 
 interface DemoCredentialsProps {
     className?: string;
@@ -64,7 +65,12 @@ export default function DemoCredentials({ className = '' }: DemoCredentialsProps
                         {credentials.map((cred, index) => (
                             <div key={index} className="text-sm">
                                 <div className="font-medium text-blue-800 mb-1">
-                                    {cred.label} – <span className="text-blue-600">{cred.route}</span>
+                                    {cred.label} – <Link 
+                                        href={cred.route} 
+                                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                                    >
+                                        {cred.route}
+                                    </Link>
                                 </div>
                                 <div className="flex items-center gap-2 text-blue-700">
                                     <span className="font-mono bg-white px-2 py-1 rounded border text-xs">

@@ -199,7 +199,7 @@ const Footer: React.FC<FooterProps> = ({
               
               {/* Copyright */}
               <div className="order-2 md:order-1">
-                <p className="text-xs sm:text-sm text-muted-foreground m-0 text-center md:text-left">
+                <p className="text-xs sm:text-sm text-gray-300 m-0 text-center md:text-left font-medium">
                   © {currentYear} {companyName}. {t('customer.all_rights_reserved')}
                 </p>
               </div>
@@ -211,7 +211,7 @@ const Footer: React.FC<FooterProps> = ({
                     <li key={index} className="m-0">
                       <Link 
                         href={link.href}
-                        className="text-xs sm:text-sm text-muted-foreground no-underline font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:text-secondary hover:bg-primary/10 whitespace-nowrap"
+                        className="text-xs sm:text-sm text-gray-300 no-underline font-medium transition-all duration-200 px-3 py-2 rounded-lg hover:text-white hover:bg-primary/20 whitespace-nowrap"
                       >
                         {link.title}
                       </Link>
