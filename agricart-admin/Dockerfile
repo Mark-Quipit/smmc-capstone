@@ -17,7 +17,9 @@ RUN apt-get update && apt-get install -y \
         pdo_pgsql \
         mbstring \
         bcmath \
-        gd
+        gd \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -25,14 +27,26 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
-# Copy project
-COPY . .
+# Copy composer files first (better Docker layer caching)
+COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Copy package files
+COPY package*.json ./
+
+# Install Node dependencies
+RUN npm ci --only=production
+
+# Copy application code
+COPY . .
 
 # Build frontend assets
-RUN npm install && npm run build
+RUN npm run build
+
+# Generate optimized autoload files
+RUN composer dump-autoload --optimize
 
 # Create storage symlink (CRITICAL for production)
 RUN php artisan storage:link || true
@@ -41,11 +55,16 @@ RUN php artisan storage:link || true
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Clear caches safely
-RUN php artisan config:clear \
- && php artisan route:clear \
- && php artisan view:clear
-
+# Expose port
 EXPOSE 10000
 
-CMD php artisan optimize && php artisan serve --host=0.0.0.0 --port=10000
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+  CMD curl -f http://localhost:10000/api/health || exit 1
+
+# Start command with migrations
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan migrate --force && \
+    php artisan serve --host=0.0.0.0 --port=10000
