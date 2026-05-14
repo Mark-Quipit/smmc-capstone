@@ -11,6 +11,7 @@ interface Credential {
     route: string;
     email: string;
     password: string;
+    isMemberId?: boolean;
 }
 
 const credentials: Credential[] = [
@@ -23,8 +24,9 @@ const credentials: Credential[] = [
     {
         label: 'Member (Farmer)',
         route: '/member/login',
-        email: 'member@member.com',
-        password: '12345678'
+        email: '2411000',
+        password: '12345678',
+        isMemberId: true
     },
     {
         label: 'Logistics',
@@ -80,7 +82,7 @@ export default function DemoCredentials({ className = '' }: DemoCredentialsProps
                                         type="button"
                                         onClick={() => copyToClipboard(cred.email, `email-${index}`)}
                                         className="p-1 hover:bg-blue-100 rounded transition-colors"
-                                        title="Copy email"
+                                        title={cred.isMemberId ? "Copy member ID" : "Copy email"}
                                     >
                                         {copiedField === `email-${index}` ? (
                                             <Check className="h-3 w-3 text-green-600" />
